@@ -1,0 +1,15 @@
+﻿{
+  "entry_date": "2026-11-16",
+  "department": "Injection",
+  "shift": "Équipe A",
+  "machine": "INJ-04",
+  "client": "KIKO",
+  "product": "PIN 1,2×12",
+  "production_order": "OF-2026-1148",
+  "planned_quantity": 12000,
+  "produced_quantity": 10850,
+  "rejected_quantity": 150,
+  "downtime_minutes": 45,
+  "downtime_reason": "Nettoyage vacuum",
+  "comment": "Exemple illustratif à ne pas confondre avec les données du classeur."
+}

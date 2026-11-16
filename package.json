@@ -1,0 +1,31 @@
+{
+  "name": "smart-planning",
+  "version": "3.0.0",
+  "description": "Smart Planning - pilotage industriel, commandes, stocks, production et livraisons",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prebuild": "node scripts/build_business_data.mjs",
+    "test": "node --test scripts/test-business.mjs scripts/test-cloud.mjs",
+    "start": "vite preview --host 127.0.0.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.15.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.8",
+    "react-test-renderer": "^18.3.1",
+    "vite": "^6.0.0"
+  }
+}
