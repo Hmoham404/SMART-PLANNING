@@ -1,0 +1,21 @@
+import React,{useState} from 'react';
+import {ArrowLeft,Maximize,Minimize,ClipboardList,CheckCircle2,ArrowRight,Presentation} from 'lucide-react';
+import ExecutiveDashboard from './ExecutiveDashboard';
+
+export default function MeetingRoom({onClose,...dashboard}) {
+ const [agenda,setAgenda]=useState(0),[notes,setNotes]=useState(()=>{try{return localStorage.getItem('myc-meeting-notes')||''}catch{return ''}}),[saved,setSaved]=useState(''),[full,setFull]=useState(false);
+ const steps=['Situation de production','Commandes et engagements','Matières et capacités','Décisions et actions'];
+ async function fullscreen(){try{if(document.fullscreenElement){await document.exitFullscreen();setFull(false)}else{await document.documentElement.requestFullscreen();setFull(true)}}catch{setSaved('Le plein écran est indisponible dans ce navigateur.')}}
+ function updateNotes(value){setNotes(value);try{localStorage.setItem('myc-meeting-notes',value);setSaved('Notes enregistrées sur cet appareil.')}catch{setSaved('Enregistrement indisponible. Copiez vos notes avant de quitter.')}}
+ return <main className="meeting-room">
+  <header className="meeting-header"><button className="meeting-back" onClick={onClose}><ArrowLeft size={18}/> Retour à l’atelier</button><div className="meeting-brand"><strong>MYC</strong><span>ESPACE DE RÉUNION</span></div><button className="meeting-fullscreen" onClick={fullscreen}>{full?<Minimize size={18}/>:<Maximize size={18}/>} Plein écran</button></header>
+  <div className="meeting-content"><div className="meeting-heading"><div><span className="meeting-eyebrow"><Presentation size={17}/> RÉUNION DE PILOTAGE</span><h1>Une vision partagée.<br/>Des décisions concrètes.</h1><p>Production, engagements clients et priorités de l’atelier.</p></div><div className="meeting-context"><span>Périmètre de la réunion</span><strong>{dashboard.client||'Tous les clients'}</strong><small>Situation au {dashboard.asOf.split('-').reverse().join('/')}</small></div></div>
+  <nav className="meeting-agenda" aria-label="Ordre du jour">{steps.map((step,i)=><button key={step} className={agenda===i?'selected':''} aria-current={agenda===i?'step':undefined} onClick={()=>setAgenda(i)}><span>{agenda>i?<CheckCircle2 size={16}/>:String(i+1).padStart(2,'0')}</span>{step}</button>)}</nav>
+  <section className="meeting-topic"><div><h2>{steps[agenda]}</h2><p>{['Faites le point sur les indicateurs et les réalisations du jour.','Examinez les échéances dépassées et préparez les prochaines livraisons.','Identifiez les besoins matières et vérifiez la charge des postes.','Consignez les décisions, leurs responsables et les échéances.'][agenda]}</p></div>{agenda<3&&<button className="btn secondary" onClick={()=>setAgenda(agenda+1)}>Point suivant <ArrowRight size={16}/></button>}</section>
+  {agenda===0&&<ExecutiveDashboard {...dashboard}/>}
+  {agenda===1&&<div className="meeting-focus"><h3>Engagements clients</h3><p>{dashboard.orders.filter(o=>o.late).length} commandes en retard sur {dashboard.orders.length} commandes dans le périmètre.</p><button className="btn primary" onClick={()=>dashboard.go('orders')}>Examiner les commandes <ArrowRight size={16}/></button><button className="btn secondary" onClick={()=>dashboard.go('deliveries')}>Préparer les livraisons</button></div>}
+  {agenda===2&&<div className="meeting-focus"><h3>Approvisionnement et charge</h3><p>{dashboard.materials.filter(m=>m.risk).length} lignes matières présentent un besoin prévisionnel non couvert.</p><button className="btn primary" onClick={()=>dashboard.go('coverage')}>Voir la couverture matières</button><button className="btn secondary" onClick={()=>dashboard.go('capacity')}>Examiner les capacités</button><button className="btn secondary" onClick={()=>dashboard.go('planning')}>Ouvrir le planning</button></div>}
+  <section className="meeting-notes"><div><ClipboardList size={22}/><h2>Décisions & plan d’action</h2><span>Notes locales · conservées sur cet appareil</span></div><label htmlFor="meeting-notes">Décision, responsable et échéance</label><textarea id="meeting-notes" value={notes} onChange={e=>updateNotes(e.target.value)} placeholder="Ex. Confirmer la livraison — Responsable : … — Échéance : …" rows={agenda===3?10:3}/><p role="status">{saved||'Vos notes sont conservées automatiquement dans ce navigateur.'}</p></section>
+  </div>
+ </main>
+}

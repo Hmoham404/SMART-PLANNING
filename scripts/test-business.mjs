@@ -81,3 +81,21 @@ test('Parcours React : saisie, persistance, stock, livraison, capacité et plann
  for(const name of ['Réalisations','Couverture des stocks','Analyses & KPI','Points à vérifier'])await click(app.root,name);
  await act(async()=>app.unmount());
 });
+
+test('Espace MYC : ouverture, ordre du jour, notes persistantes et retour atelier',async()=>{
+ const memory=new Map();globalThis.localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)};
+ let app;await act(async()=>{app=mount()});await waitFor(()=>app.root.findAllByProps({className:'brand-meeting-link'}).length>0);
+ await act(async()=>app.root.findByProps({className:'brand-meeting-link'}).props.onClick());
+ assert.equal(app.root.findAllByProps({className:'meeting-room'}).length,1);
+ await click(app.root,'Point suivant');assert(text(app.root).includes('Engagements clients'));
+ await click(app.root,'Point suivant');assert(text(app.root).includes('Approvisionnement et charge'));
+ await click(app.root,'Point suivant');
+ await act(async()=>app.root.findByProps({id:'meeting-notes'}).props.onChange({target:{value:'Confirmer la livraison - Responsable atelier - vendredi'}}));
+ assert.equal(memory.get('myc-meeting-notes'),'Confirmer la livraison - Responsable atelier - vendredi');
+ await click(app.root,'Retour');assert.equal(app.root.findAllByProps({className:'meeting-room'}).length,0);
+ await act(async()=>app.root.findByProps({className:'brand-meeting-link'}).props.onClick());
+ assert.equal(app.root.findByProps({id:'meeting-notes'}).props.value,memory.get('myc-meeting-notes'));
+ await click(app.root,'Point suivant');await click(app.root,'Examiner les commandes');
+ assert.equal(app.root.findAllByProps({className:'meeting-room'}).length,0);
+ await act(async()=>app.unmount());delete globalThis.localStorage;
+});

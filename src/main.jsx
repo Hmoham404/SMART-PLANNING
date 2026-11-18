@@ -4,3 +4,5 @@ import App from './App';
 import './style.css';
 import './business.css';
 createRoot(document.getElementById('root')).render(<App/>);
+
+import './interface.css';
